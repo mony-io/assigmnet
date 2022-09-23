@@ -52,7 +52,7 @@ const Add = () => {
       toast: true,
       position: "top-end",
       showConfirmButton: false,
-      timer: 2000,
+      timer: 2500,
       timerProgressBar: true,
       didOpen: (toast) => {
         toast.addEventListener("mouseenter", Swal);
@@ -113,6 +113,7 @@ const Add = () => {
               type="text"
               name="title"
               id="title"
+              value={book.title}
               required
               onChange={handleChange}
             />
@@ -131,6 +132,7 @@ const Add = () => {
               type="text"
               name="author"
               id="author"
+              value={book.author}
               required
               onChange={handleChange}
             />
@@ -147,6 +149,7 @@ const Add = () => {
               type="date"
               name="date"
               id="date"
+              value={book.date}
               required
               onChange={handleChange}
             />
@@ -169,7 +172,10 @@ const Add = () => {
                   book.date !== ""
                 ) {
                   e.preventDefault();
+                  setBook({ title: "", author: "", date: "" });
                   toastMessage();
+                } else {
+                  e.preventDefault();
                 }
               }}
             >
