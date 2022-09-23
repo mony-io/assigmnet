@@ -174,7 +174,7 @@ const Add = () => {
                   e.preventDefault();
                   setBook({ title: "", author: "", date: "" });
                   toastMessage();
-                } else {
+                } else if (errorMessage !== "") {
                   e.preventDefault();
                 }
               }}
