@@ -90,10 +90,27 @@ app.get("/api/query", (req, res) => {
 // check book exit
 app.get("/api/validate", (req, res) => {
   const { q } = req.query;
+  const sql = "select title from tblbook where title=?";
+  conn.query(sql, [q.trim()], (err, data) => {
+    if (err) throw err;
+    if (data.length === 0) {
+      res.send(false);
+    } else {
+      res.send("Book already exist...!");
+    }
+  });
+});
+
+app.get("/api/valupdate", (req, res) => {
+  const { q } = req.query;
   const sql = "select id,title from tblbook where title=?";
   conn.query(sql, [q], (err, data) => {
     if (err) throw err;
-    res.send(data);
+    if (data.length === 0) {
+      res.send(false);
+    } else {
+      res.send(data);
+    }
   });
 });
 

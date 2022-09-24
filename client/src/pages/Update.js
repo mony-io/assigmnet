@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import moment from "moment";
 import Swal from "sweetalert2";
+import moment from "moment";
 const Update = () => {
   // ========== books ==============
   const [book, setBook] = useState({
@@ -12,13 +12,33 @@ const Update = () => {
     author: "",
     date: "",
   });
-
-  const { title, author } = book;
+  // set error message
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
-  const bookId = location.pathname.split("/")[2];
+  // convert letter to capitalize
+  const capitalLetter = (str) => {
+    return str[0].toUpperCase() + str.substring(1, str.length);
+  };
+
+  const bookId = parseInt(location.pathname.split("/")[2]);
   //console.log(location.pathname.split("/")[2]);
+
+  const check_update = async (value) => {
+    const res = await axios.get(
+      `http://localhost:3001/api/valupdate?q=${encodeURIComponent(value)}`
+    );
+    if (res.data) {
+      if (res.data[0].id !== bookId && value === res.data[0].title) {
+        setError("Book already exist...!");
+      } else {
+        setError("");
+      }
+    } else {
+      setError("");
+    }
+  };
 
   useEffect(() => {
     try {
@@ -99,11 +119,14 @@ const Update = () => {
               type="text"
               name="title"
               id="title"
-              value={title}
+              value={book.title}
               required
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+                check_update(capitalLetter(e.target.value));
+              }}
             />
-            <span className="text-red-600 font-sm"></span>
+            <span className="text-red-600 font-sm">{error}</span>
           </div>
           <div className="mb-2">
             <label
@@ -118,7 +141,7 @@ const Update = () => {
               type="text"
               name="author"
               id="author"
-              value={author}
+              value={book.author}
               required
               onChange={handleChange}
             />
@@ -147,10 +170,42 @@ const Update = () => {
                 if (
                   book.title !== "" &&
                   book.author !== "" &&
-                  book.date !== ""
+                  book.date !== "" &&
+                  error === ""
                 ) {
                   e.preventDefault();
                   handleClick();
+                } else if (
+                  book.title !== "" &&
+                  book.author !== "" &&
+                  book.date !== ""
+                ) {
+                  e.preventDefault();
+                  setError("");
+                  try {
+                    axios
+                      .get(`http://localhost:3001/api/books/${bookId}`)
+                      .then((res) => {
+                        setBook({ ...res.data[0] });
+                      });
+                    const Toast = Swal.mixin({
+                      toast: true,
+                      position: "top-end",
+                      showConfirmButton: false,
+                      timer: 3000,
+                      timerProgressBar: true,
+                      didOpen: (toast) => {
+                        toast.addEventListener("mouseenter", Swal);
+                        toast.addEventListener("mouseleave", Swal);
+                      },
+                    });
+                    Toast.fire({
+                      icon: "error",
+                      title: "Book has been updated fail.",
+                    });
+                  } catch (err) {
+                    console.log(err);
+                  }
                 }
               }}
             >

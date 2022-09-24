@@ -17,9 +17,9 @@ const Add = () => {
   let navigate = useNavigate();
   // error message
   const [errorMessage, setErrorMessage] = useState("");
-
   useEffect(() => {
     // validate book
+
     const validate_book = async () => {
       try {
         const res = await axios.get(
@@ -27,12 +27,8 @@ const Add = () => {
             book.title
           )}`
         );
-        if (res.data.length !== 0) {
-          if (res.data[0].title === book.title) {
-            setErrorMessage("Book already exist!!....");
-          } else {
-            setErrorMessage("");
-          }
+        if (res.data) {
+          setErrorMessage(res.data);
         } else {
           setErrorMessage("");
         }
@@ -52,7 +48,7 @@ const Add = () => {
       toast: true,
       position: "top-end",
       showConfirmButton: false,
-      timer: 2500,
+      timer: 3000,
       timerProgressBar: true,
       didOpen: (toast) => {
         toast.addEventListener("mouseenter", Swal);
