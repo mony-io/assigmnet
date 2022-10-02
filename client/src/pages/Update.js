@@ -10,8 +10,9 @@ const Update = () => {
   const [book, setBook] = useState({
     title: "",
     author: "",
-    date: "",
+    published: "",
   });
+
   // set error message
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -19,7 +20,11 @@ const Update = () => {
 
   // convert letter to capitalize
   const capitalLetter = (str) => {
-    return str[0].toUpperCase() + str.substring(1, str.length);
+    if (str !== "") {
+      return str[0].toUpperCase() + str.substring(1, str.length);
+    } else {
+      return "";
+    }
   };
 
   const bookId = parseInt(location.pathname.split("/")[2]);
@@ -43,7 +48,7 @@ const Update = () => {
   useEffect(() => {
     try {
       axios.get(`http://localhost:3001/api/books/${bookId}`).then((res) => {
-        setBook({ ...res.data[0] });
+        setBook({ ...res.data[0], published: dateFormmat(res.data[0]) });
       });
     } catch (err) {
       console.log(err);
@@ -56,7 +61,6 @@ const Update = () => {
     let formatDate = moment(date).format("YYYY-MM-DD");
     return formatDate;
   }
-  let date = dateFormmat(book.published);
 
   // handle on change
   const handleChange = (e) => {
@@ -156,9 +160,9 @@ const Update = () => {
             <input
               className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-3"
               type="date"
-              name="date"
+              name="published"
               id="date"
-              value={date}
+              value={book.published}
               required
               onChange={handleChange}
             />

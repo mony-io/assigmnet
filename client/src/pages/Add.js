@@ -19,7 +19,6 @@ const Add = () => {
   const [errorMessage, setErrorMessage] = useState("");
   useEffect(() => {
     // validate book
-
     const validate_book = async () => {
       try {
         const res = await axios.get(
@@ -43,7 +42,8 @@ const Add = () => {
     }
   }, [book.title]);
 
-  const toastMessage = () => {
+  // toast message
+  const toastMessage = (iconType, title) => {
     const Toast = Swal.mixin({
       toast: true,
       position: "top-end",
@@ -56,8 +56,8 @@ const Add = () => {
       },
     });
     Toast.fire({
-      icon: "error",
-      title: "Book has been added fail.",
+      icon: iconType,
+      title: title,
     });
   };
 
@@ -65,25 +65,15 @@ const Add = () => {
   const handleChange = (e) => {
     setBook((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
+
+  // handle when user click button submit
   const handleClick = async () => {
     try {
-      await axios.post("http://localhost:3001/api/books", book);
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.addEventListener("mouseenter", Swal);
-          toast.addEventListener("mouseleave", Swal);
-        },
-      });
-      Toast.fire({
-        icon: "success",
-        title: "Book has been added successfully.",
-      });
-      navigate("/");
+      let res = await axios.post("http://localhost:3001/api/books", book);
+      if (res.data) {
+        toastMessage("success", "Book has been added successfully.");
+        navigate("/");
+      }
     } catch (err) {
       console.log(err);
     }
@@ -169,9 +159,7 @@ const Add = () => {
                 ) {
                   e.preventDefault();
                   setBook({ title: "", author: "", date: "" });
-                  toastMessage();
-                } else if (errorMessage !== "") {
-                  e.preventDefault();
+                  toastMessage("error", "Book has been added fail.");
                 }
               }}
             >

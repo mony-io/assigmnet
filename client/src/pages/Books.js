@@ -8,7 +8,6 @@ import Swal from "sweetalert2";
 const Books = () => {
   const [books, setBooks] = useState([]);
   const [query, setQuery] = useState("");
-
   // fetch book method
   const fetchAllBooks = async () => {
     try {
